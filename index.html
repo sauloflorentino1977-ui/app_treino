@@ -219,6 +219,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzjvYxoMFWdGJYFSHV03Y6Z
 let treinoAtual = null;
 let exercicios = [];
 let exIndex = 0;
+let treinoExecId = null;
 
 /* ===========================
    INIT
@@ -229,23 +230,18 @@ window.onload = carregarTreinos;
    API — TREINOS
 =========================== */
 async function carregarTreinos() {
-  try {
-    const resp = await fetch(`${API_URL}?action=listarTreinos`);
-    const treinos = await resp.json();
+  const resp = await fetch(`${API_URL}?action=listarTreinos`);
+  const treinos = await resp.json();
 
-    const select = document.getElementById("treinoSelect");
-    select.innerHTML = "";
+  const select = document.getElementById("treinoSelect");
+  select.innerHTML = "";
 
-    treinos.forEach(id => {
-      const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = formatarNomeTreino(id);
-      select.appendChild(opt);
-    });
-  } catch (e) {
-    alert("Erro ao carregar treinos");
-    console.error(e);
-  }
+  treinos.forEach(id => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = formatarNomeTreino(id);
+    select.appendChild(opt);
+  });
 }
 
 function formatarNomeTreino(id) {
@@ -264,7 +260,17 @@ function formatarNomeTreino(id) {
 async function iniciarTreino() {
   treinoAtual = document.getElementById("treinoSelect").value;
 
-  const resp = await fetch(`${API_URL}?action=buscarTreino&treino=${treinoAtual}`);
+  // 1️⃣ cria treino_exec
+  const respExec = await fetch(
+    `${API_URL}?action=iniciarTreinoExec&treino_id=${treinoAtual}`
+  );
+  const execData = await respExec.json();
+  treinoExecId = execData.treino_exec_id;
+
+  // 2️⃣ carrega exercícios
+  const resp = await fetch(
+    `${API_URL}?action=buscarTreino&treino=${treinoAtual}`
+  );
   exercicios = await resp.json();
 
   exIndex = 0;
@@ -296,11 +302,46 @@ function render() {
     cont.innerHTML += `
       <div class="set">
         <span>S${i}</span>
-        <input placeholder="Carga">
-        <input placeholder="Reps">
-        <input value="${ex.rir_alvo}" placeholder="RIR">
+        <input class="carga" placeholder="Carga">
+        <input class="reps" placeholder="Reps">
+        <input class="rir" value="${ex.rir_alvo}" placeholder="RIR">
       </div>`;
   }
+}
+
+/* ===========================
+   SALVAR EXERCÍCIO
+=========================== */
+async function salvarExercicio() {
+  const ex = exercicios[exIndex];
+  const sets = document.querySelectorAll(".set");
+
+  const series = [];
+
+  sets.forEach((el, idx) => {
+    series.push({
+      serie: idx + 1,
+      carga: el.querySelector(".carga").value,
+      reps: el.querySelector(".reps").value,
+      rir: el.querySelector(".rir").value
+    });
+  });
+
+  const payload = {
+    treino_exec_id: treinoExecId,
+    treino_id: treinoAtual,
+    ordem: ex.ordem,
+    exercicio: ex.exercicio,
+    obs_exercicio: document.getElementById("obs").value,
+    series: series
+  };
+
+  await fetch(`${API_URL}?action=salvarExercicioExec`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  alert("Exercício salvo ✔️");
 }
 
 /* ===========================
@@ -329,6 +370,7 @@ function voltarHome() {
 
   exercicios = [];
   treinoAtual = null;
+  treinoExecId = null;
   exIndex = 0;
 
   document.getElementById("workout").classList.add("hidden");
