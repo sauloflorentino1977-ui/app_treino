@@ -22,15 +22,17 @@
       color: #f8fafc;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     /* HEADER */
     header {
-      padding: 16px;
+      padding: 14px;
       text-align: center;
       font-size: 18px;
       font-weight: 600;
       background: #020617;
+      flex-shrink: 0;
     }
 
     /* CONTENT */
@@ -38,10 +40,6 @@
       flex: 1;
       padding: 16px;
       overflow-y: auto;
-    }
-
-    .exercise {
-      margin-bottom: 20px;
     }
 
     .exercise h2 {
@@ -65,7 +63,7 @@
     }
 
     .set span {
-      width: 60px;
+      width: 40px;
       font-weight: 600;
       text-align: center;
       line-height: 40px;
@@ -80,30 +78,56 @@
       font-size: 16px;
     }
 
-    /* FOOTER */
-    footer {
-      padding: 16px;
-      background: #020617;
-    }
-
-    button {
-      width: 100%;
+    /* BOTÃO FLUTUANTE */
+    .fab {
+      position: fixed;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
       height: 48px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: none;
       background: #2563eb;
       color: #fff;
       font-size: 16px;
       font-weight: 600;
+      z-index: 10;
+    }
+
+    /* MENU INFERIOR */
+    nav {
+      height: 64px;
+      background: #020617;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-shrink: 0;
+      border-top: 1px solid #020617;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    nav button.active {
+      color: #38bdf8;
     }
   </style>
 </head>
 
 <body>
 
-  <header>Registro de Treino</header>
+  <header>Treino</header>
 
-  <main>
+  <main id="screen-treino">
     <div class="exercise">
       <h2>Supino Reto Barra</h2>
       <p>Peito • Reps 6–8 • RIR 2</p>
@@ -131,9 +155,13 @@
     </div>
   </main>
 
-  <footer>
-    <button>Salvar exercício</button>
-  </footer>
+  <button class="fab">Salvar exercício</button>
+
+  <nav>
+    <button class="active">🏋️<span>Treino</span></button>
+    <button>📊<span>Histórico</span></button>
+    <button>⚙️<span>Config</span></button>
+  </nav>
 
 </body>
 </html>
