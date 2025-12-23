@@ -2,27 +2,25 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Treino</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Treino</title>
 
   <style>
     /* ===========================
-       RESET / BASE
+       BASE
     =========================== */
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     }
 
     body {
-      height: 100vh;
-      background: #0f172a;
-      color: #f8fafc;
+      margin: 0;
+      background: #020617;
+      color: #e5e7eb;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
     /* ===========================
@@ -30,14 +28,13 @@
     =========================== */
     header {
       background: #020617;
+      border-bottom: 1px solid #0f172a;
       padding: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 600;
       position: relative;
-      flex-shrink: 0;
+      font-weight: 600;
     }
 
     header button {
@@ -46,8 +43,8 @@
       background: none;
       border: none;
       color: #38bdf8;
-      font-size: 16px;
-      display: none;
+      font-size: 14px;
+      cursor: pointer;
     }
 
     /* ===========================
@@ -55,9 +52,8 @@
     =========================== */
     main {
       flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
       padding: 16px;
+      overflow-y: auto;
     }
 
     button.primary {
@@ -69,93 +65,90 @@
       color: #fff;
       font-size: 16px;
       font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      border: none;
+      background: #1f2937;
+      color: #fff;
+      cursor: pointer;
     }
 
     /* ===========================
        HOME
     =========================== */
     #home label {
-      font-size: 14px;
-      opacity: 0.85;
-      margin-bottom: 8px;
       display: block;
+      margin-bottom: 6px;
+      opacity: 0.8;
     }
 
     #home select {
       width: 100%;
-      height: 48px;
+      height: 46px;
       border-radius: 12px;
       border: none;
-      font-size: 16px;
       padding: 0 12px;
-      margin-bottom: 24px;
+      font-size: 16px;
+      margin-bottom: 20px;
     }
 
     /* ===========================
-       WORKOUT
+       EXERCÍCIO
     =========================== */
     .exercise h2 {
-      font-size: 20px;
-      margin-bottom: 4px;
+      margin: 0 0 4px 0;
     }
 
     .exercise p {
+      margin: 0 0 16px 0;
       font-size: 14px;
       opacity: 0.8;
-      margin-bottom: 16px;
     }
 
     .set {
-      background: #020617;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
       display: flex;
       gap: 8px;
       align-items: center;
+      margin-bottom: 10px;
+      background: #020617;
+      padding: 10px;
+      border-radius: 10px;
     }
 
     .set span {
-      width: 40px;
-      font-weight: 600;
+      width: 34px;
       text-align: center;
-      flex-shrink: 0;
+      font-weight: 600;
     }
 
     .set input {
       flex: 1;
-      min-width: 0;
-      height: 40px;
+      height: 38px;
       border-radius: 8px;
       border: none;
-      padding: 0 10px;
-      font-size: 16px;
+      padding: 0 8px;
+      font-size: 14px;
     }
 
     textarea {
       width: 100%;
       min-height: 70px;
+      margin-top: 10px;
       border-radius: 10px;
       border: none;
-      padding: 10px;
+      padding: 8px;
       font-size: 14px;
-      margin-top: 12px;
     }
 
     .nav {
       display: flex;
       gap: 8px;
-      margin-top: 16px;
-    }
-
-    .nav button {
-      background: #334155;
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      height: 44px;
-      flex: 1;
-      font-size: 14px;
+      margin-top: 12px;
     }
 
     .hidden {
@@ -167,7 +160,7 @@
 <body>
 
 <header>
-  <button id="btnHome" onclick="voltarHome()">← Home</button>
+  <button id="btnHome" type="button" onclick="voltarHome()" class="hidden">← Home</button>
   <span id="headerTitle">Selecionar treino</span>
 </header>
 
@@ -177,11 +170,14 @@
        HOME
   =========================== -->
   <section id="home">
-    <label>Qual treino hoje?</label>
+    <label>Treino</label>
     <select id="treinoSelect">
       <option>Carregando treinos...</option>
     </select>
-    <button class="primary" onclick="iniciarTreino()">Iniciar treino</button>
+
+    <button type="button" class="primary" onclick="iniciarTreino()">
+      Iniciar treino
+    </button>
   </section>
 
   <!-- ===========================
@@ -194,13 +190,19 @@
 
       <div id="series"></div>
 
-      <textarea id="obs" placeholder="Observações do exercício..."></textarea>
+      <textarea id="obs" placeholder="Observações do exercício"></textarea>
 
-      <button class="primary" style="margin-top:16px">Salvar exercício</button>
+      <button
+        type="button"
+        class="primary"
+        style="margin-top:12px"
+        onclick="salvarExercicio()">
+        Salvar exercício
+      </button>
 
       <div class="nav">
-        <button onclick="prev()">⬅️ Anterior</button>
-        <button onclick="next()">Próximo ➡️</button>
+        <button type="button" class="secondary" onclick="prev()">⬅️ Anterior</button>
+        <button type="button" class="secondary" onclick="next()">Próximo ➡️</button>
       </div>
     </div>
   </section>
@@ -217,17 +219,18 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzjvYxoMFWdGJYFSHV03Y6Z
    STATE
 =========================== */
 let treinoAtual = null;
+let treinoExecId = null;
 let exercicios = [];
 let exIndex = 0;
-let treinoExecId = null;
 
 /* ===========================
    INIT
 =========================== */
+console.log("JS carregado");
 window.onload = carregarTreinos;
 
 /* ===========================
-   API — TREINOS
+   CARREGAR TREINOS
 =========================== */
 async function carregarTreinos() {
   const resp = await fetch(`${API_URL}?action=listarTreinos`);
@@ -236,38 +239,28 @@ async function carregarTreinos() {
   const select = document.getElementById("treinoSelect");
   select.innerHTML = "";
 
-  treinos.forEach(id => {
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = formatarNomeTreino(id);
-    select.appendChild(opt);
+  treinos.forEach(t => {
+    const o = document.createElement("option");
+    o.value = t;
+    o.textContent = t;
+    select.appendChild(o);
   });
-}
-
-function formatarNomeTreino(id) {
-  const mapa = {
-    A1: "Treino A1 — Push",
-    B1: "Treino B1 — Pull",
-    C1: "Treino C1 — Legs",
-    D1: "Treino D1 — Upper"
-  };
-  return mapa[id] || `Treino ${id}`;
 }
 
 /* ===========================
    INICIAR TREINO
 =========================== */
 async function iniciarTreino() {
+  console.log("clicou iniciar");
+
   treinoAtual = document.getElementById("treinoSelect").value;
 
-  // 1️⃣ cria treino_exec
   const respExec = await fetch(
     `${API_URL}?action=iniciarTreinoExec&treino_id=${treinoAtual}`
   );
   const execData = await respExec.json();
   treinoExecId = execData.treino_exec_id;
 
-  // 2️⃣ carrega exercícios
   const resp = await fetch(
     `${API_URL}?action=buscarTreino&treino=${treinoAtual}`
   );
@@ -277,7 +270,7 @@ async function iniciarTreino() {
 
   document.getElementById("home").classList.add("hidden");
   document.getElementById("workout").classList.remove("hidden");
-  document.getElementById("btnHome").style.display = "block";
+  document.getElementById("btnHome").classList.remove("hidden");
   document.getElementById("headerTitle").innerText = `Treino ${treinoAtual}`;
 
   render();
@@ -294,7 +287,6 @@ function render() {
     `${ex.musculos} • Reps ${ex.reps_alvo} • RIR ${ex.rir_alvo}`;
 
   document.getElementById("obs").value = "";
-
   const cont = document.getElementById("series");
   cont.innerHTML = "";
 
@@ -305,7 +297,8 @@ function render() {
         <input class="carga" placeholder="Carga">
         <input class="reps" placeholder="Reps">
         <input class="rir" value="${ex.rir_alvo}" placeholder="RIR">
-      </div>`;
+      </div>
+    `;
   }
 }
 
@@ -313,6 +306,8 @@ function render() {
    SALVAR EXERCÍCIO
 =========================== */
 async function salvarExercicio() {
+  console.log("clicou salvar");
+
   const ex = exercicios[exIndex];
   const sets = document.querySelectorAll(".set");
 
@@ -335,40 +330,20 @@ async function salvarExercicio() {
     series
   };
 
-  // ✅ evita preflight/CORS: envia como x-www-form-urlencoded
   const body = new URLSearchParams();
   body.set("payload", JSON.stringify(payload));
 
-  const btn = event?.target;
-  if (btn) { btn.disabled = true; btn.innerText = "Salvando..."; }
+  await fetch(`${API_URL}?action=salvarExercicioExec`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
 
-  try {
-    const resp = await fetch(`${API_URL}?action=salvarExercicioExec`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-      body
-    });
-
-    const result = await resp.json();
-    if (result.erro) {
-      alert(`Erro ao salvar: ${result.erro}`);
-      console.error(result);
-      return;
-    }
-
-    // ✅ ao salvar, avança
-    if (exIndex < exercicios.length - 1) {
-      exIndex++;
-      render();
-    } else {
-      alert("Último exercício salvo ✔️");
-    }
-
-  } catch (e) {
-    alert("Falha ao salvar (rede/CORS). Veja o console.");
-    console.error(e);
-  } finally {
-    if (btn) { btn.disabled = false; btn.innerText = "Salvar exercício"; }
+  if (exIndex < exercicios.length - 1) {
+    exIndex++;
+    render();
+  } else {
+    alert("Último exercício salvo ✔️");
   }
 }
 
@@ -390,20 +365,19 @@ function prev() {
 }
 
 /* ===========================
-   VOLTAR HOME
+   HOME
 =========================== */
 function voltarHome() {
-  const ok = confirm("Deseja sair do treino? Os dados serão descartados.");
-  if (!ok) return;
+  if (!confirm("Deseja sair do treino? Os dados serão descartados.")) return;
 
-  exercicios = [];
   treinoAtual = null;
   treinoExecId = null;
+  exercicios = [];
   exIndex = 0;
 
   document.getElementById("workout").classList.add("hidden");
   document.getElementById("home").classList.remove("hidden");
-  document.getElementById("btnHome").style.display = "none";
+  document.getElementById("btnHome").classList.add("hidden");
   document.getElementById("headerTitle").innerText = "Selecionar treino";
 }
 </script>
