@@ -14,6 +14,18 @@
 
   <style>
     /* ===========================
+       CORREÇÃO GLOBAL DE OVERFLOW
+    =========================== */
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+   
+    /* ===========================
        VARIÁVEIS
     =========================== */
     :root {
@@ -148,7 +160,8 @@
       margin-bottom: 10px;
       background: var(--bg-card);
       padding: 10px;
-      border-radius: 10px;
+      border-radius: 12px;
+      width: 100%;
     }
 
     .set span {
@@ -158,7 +171,8 @@
     }
 
     .set input {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       height: 38px;
       border-radius: 8px;
       border: none;
@@ -194,6 +208,11 @@
       cursor: pointer;
       font-family: var(--font-ui);
     }
+
+    main {
+      overflow-x: hidden;
+    }
+
   </style>
 </head>
 
