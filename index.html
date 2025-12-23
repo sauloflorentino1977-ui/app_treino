@@ -317,7 +317,6 @@ async function salvarExercicio() {
   const sets = document.querySelectorAll(".set");
 
   const series = [];
-
   sets.forEach((el, idx) => {
     series.push({
       serie: idx + 1,
@@ -333,15 +332,44 @@ async function salvarExercicio() {
     ordem: ex.ordem,
     exercicio: ex.exercicio,
     obs_exercicio: document.getElementById("obs").value,
-    series: series
+    series
   };
 
-  await fetch(`${API_URL}?action=salvarExercicioExec`, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
+  // ✅ evita preflight/CORS: envia como x-www-form-urlencoded
+  const body = new URLSearchParams();
+  body.set("payload", JSON.stringify(payload));
 
-  alert("Exercício salvo ✔️");
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.innerText = "Salvando..."; }
+
+  try {
+    const resp = await fetch(`${API_URL}?action=salvarExercicioExec`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body
+    });
+
+    const result = await resp.json();
+    if (result.erro) {
+      alert(`Erro ao salvar: ${result.erro}`);
+      console.error(result);
+      return;
+    }
+
+    // ✅ ao salvar, avança
+    if (exIndex < exercicios.length - 1) {
+      exIndex++;
+      render();
+    } else {
+      alert("Último exercício salvo ✔️");
+    }
+
+  } catch (e) {
+    alert("Falha ao salvar (rede/CORS). Veja o console.");
+    console.error(e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = "Salvar exercício"; }
+  }
 }
 
 /* ===========================
