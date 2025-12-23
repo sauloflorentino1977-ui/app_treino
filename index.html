@@ -163,12 +163,11 @@
   <!-- HOME -->
   <section id="home">
     <label>Qual treino hoje?</label>
+    
     <select id="treinoSelect">
-      <option>A1 — Push</option>
-      <option>B1 — Pull</option>
-      <option>C1 — Legs</option>
-      <option>A2 — Push</option>
+      <option value="">Carregando treinos...</option>
     </select>
+
     <button class="primary" onclick="iniciarTreino()">Iniciar treino</button>
   </section>
 
@@ -194,11 +193,11 @@
 </main>
 
 <script>
-  /* MOCK — depois vem do Sheets */
-  const treinoMock = [
-    { exercicio: "Supino reto barra", info: "Peito • Reps 6–8 • RIR 2", series: 4, rir: 2 },
-    { exercicio: "Supino inclinado halteres", info: "Peito • Reps 8–10 • RIR 2", series: 3, rir: 2 }
-  ];
+  
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzjvYxoMFWdGJYFSHV03Y6Zt1uEVyZq3q5ImnnneVnM5oGEJlxjzLia99H2E8u-e1Lw6g/exec";
+</script>
+
 
   let exIndex = 0;
 
@@ -256,6 +255,12 @@
       render();
     }
   }
+
+      /* ===========================
+   INIT APP
+=========================== */
+window.onload = carregarTreinos;
+      
 </script>
 
 </body>
