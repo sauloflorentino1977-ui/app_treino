@@ -25,10 +25,23 @@
     header {
       background: #020617;
       padding: 14px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 18px;
       font-weight: 600;
+      position: relative;
       flex-shrink: 0;
+    }
+
+    header button {
+      position: absolute;
+      left: 12px;
+      background: none;
+      border: none;
+      color: #38bdf8;
+      font-size: 16px;
+      display: none;
     }
 
     main {
@@ -38,7 +51,7 @@
       padding: 16px;
     }
 
-    button {
+    button.primary {
       width: 100%;
       height: 48px;
       border-radius: 14px;
@@ -49,7 +62,7 @@
       font-weight: 600;
     }
 
-    /* ===== HOME ===== */
+    /* HOME */
     #home label {
       font-size: 14px;
       opacity: 0.85;
@@ -67,7 +80,7 @@
       margin-bottom: 24px;
     }
 
-    /* ===== WORKOUT ===== */
+    /* WORKOUT */
     .exercise h2 {
       font-size: 20px;
       margin-bottom: 4px;
@@ -106,6 +119,16 @@
       font-size: 16px;
     }
 
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
     .nav {
       display: flex;
       gap: 8px;
@@ -114,6 +137,12 @@
 
     .nav button {
       background: #334155;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      height: 44px;
+      flex: 1;
+      font-size: 14px;
     }
 
     .hidden {
@@ -124,7 +153,10 @@
 
 <body>
 
-<header id="header">Selecionar treino</header>
+<header>
+  <button id="btnHome" onclick="voltarHome()">← Home</button>
+  <span id="headerTitle">Selecionar treino</span>
+</header>
 
 <main>
 
@@ -137,7 +169,7 @@
       <option>C1 — Legs</option>
       <option>A2 — Push</option>
     </select>
-    <button onclick="iniciarTreino()">Iniciar treino</button>
+    <button class="primary" onclick="iniciarTreino()">Iniciar treino</button>
   </section>
 
   <!-- WORKOUT -->
@@ -148,7 +180,9 @@
 
       <div id="series"></div>
 
-      <button style="margin-top:16px">Salvar exercício</button>
+      <textarea id="obs" placeholder="Observações do exercício..."></textarea>
+
+      <button class="primary" style="margin-top:16px">Salvar exercício</button>
 
       <div class="nav">
         <button onclick="prev()">⬅️ Anterior</button>
@@ -160,19 +194,10 @@
 </main>
 
 <script>
+  /* MOCK — depois vem do Sheets */
   const treinoMock = [
-    {
-      exercicio: "Supino reto barra",
-      info: "Peito • Reps 6–8 • RIR 2",
-      series: 4,
-      rir: 2
-    },
-    {
-      exercicio: "Supino inclinado halteres",
-      info: "Peito • Reps 8–10 • RIR 2",
-      series: 3,
-      rir: 2
-    }
+    { exercicio: "Supino reto barra", info: "Peito • Reps 6–8 • RIR 2", series: 4, rir: 2 },
+    { exercicio: "Supino inclinado halteres", info: "Peito • Reps 8–10 • RIR 2", series: 3, rir: 2 }
   ];
 
   let exIndex = 0;
@@ -180,15 +205,29 @@
   function iniciarTreino() {
     document.getElementById("home").classList.add("hidden");
     document.getElementById("workout").classList.remove("hidden");
-    document.getElementById("header").innerText = "Treino em execução";
+    document.getElementById("btnHome").style.display = "block";
+    document.getElementById("headerTitle").innerText = "Treino em execução";
     exIndex = 0;
     render();
+  }
+
+  function voltarHome() {
+    const ok = confirm("Deseja sair do treino? Os dados serão descartados.");
+    if (!ok) return;
+
+    document.getElementById("home").classList.remove("hidden");
+    document.getElementById("workout").classList.add("hidden");
+    document.getElementById("btnHome").style.display = "none";
+    document.getElementById("headerTitle").innerText = "Selecionar treino";
+    document.getElementById("series").innerHTML = "";
+    document.getElementById("obs").value = "";
   }
 
   function render() {
     const ex = treinoMock[exIndex];
     document.getElementById("exTitulo").innerText = ex.exercicio;
     document.getElementById("exInfo").innerText = ex.info;
+    document.getElementById("obs").value = "";
 
     const cont = document.getElementById("series");
     cont.innerHTML = "";
