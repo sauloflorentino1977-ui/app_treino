@@ -27,7 +27,7 @@
 
     /* HEADER */
     header {
-      padding: 14px;
+      padding: 16px;
       text-align: center;
       font-size: 18px;
       font-weight: 600;
@@ -42,6 +42,37 @@
       overflow-y: auto;
     }
 
+    /* BOTÃO */
+    button {
+      width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* HOME */
+    .home label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .home select {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      padding: 0 12px;
+      margin-bottom: 24px;
+    }
+
+    /* EXERCÍCIO */
     .exercise h2 {
       font-size: 20px;
       margin-bottom: 4px;
@@ -60,13 +91,13 @@
       margin-bottom: 12px;
       display: flex;
       gap: 8px;
+      align-items: center;
     }
 
     .set span {
       width: 40px;
       font-weight: 600;
       text-align: center;
-      line-height: 40px;
     }
 
     .set input {
@@ -78,90 +109,122 @@
       font-size: 16px;
     }
 
-    /* BOTÃO FLUTUANTE */
-    .fab {
-      position: fixed;
-      bottom: 76px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      height: 48px;
-      border-radius: 14px;
-      border: none;
-      background: #2563eb;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      z-index: 10;
-    }
-
-    /* MENU INFERIOR */
-    nav {
-      height: 64px;
-      background: #020617;
+    .nav {
       display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-shrink: 0;
-      border-top: 1px solid #020617;
+      gap: 8px;
+      margin-top: 16px;
     }
 
-    nav button {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+    .nav button {
+      background: #334155;
     }
 
-    nav button.active {
-      color: #38bdf8;
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 
 <body>
 
-  <header>Treino</header>
+<header id="header">Selecionar treino</header>
 
-  <main id="screen-treino">
+<main>
+
+  <!-- TELA 1 — HOME -->
+  <section id="home" class="home">
+    <label>Qual treino hoje?</label>
+
+    <select id="treinoSelect">
+      <option value="A1">Treino A1 — Push</option>
+      <option value="B1">Treino B1 — Pull</option>
+      <option value="C1">Treino C1 — Legs</option>
+      <option value="A2">Treino A2 — Push</option>
+    </select>
+
+    <button onclick="iniciarTreino()">Iniciar treino</button>
+  </section>
+
+  <!-- TELA 2 — EXECUÇÃO -->
+  <section id="workout" class="hidden">
     <div class="exercise">
-      <h2>Supino Reto Barra</h2>
-      <p>Peito • Reps 6–8 • RIR 2</p>
+      <h2 id="exTitulo"></h2>
+      <p id="exInfo"></p>
 
-      <div class="set">
-        <span>S1</span>
-        <input placeholder="Carga" />
-        <input placeholder="Reps" />
-        <input placeholder="RIR" value="2" />
-      </div>
+      <div id="series"></div>
 
-      <div class="set">
-        <span>S2</span>
-        <input placeholder="Carga" />
-        <input placeholder="Reps" />
-        <input placeholder="RIR" value="2" />
-      </div>
+      <button style="margin-top:16px">Salvar exercício</button>
 
-      <div class="set">
-        <span>S3</span>
-        <input placeholder="Carga" />
-        <input placeholder="Reps" />
-        <input placeholder="RIR" value="2" />
+      <div class="nav">
+        <button onclick="prev()">⬅️ Anterior</button>
+        <button onclick="next()">Próximo ➡️</button>
       </div>
     </div>
-  </main>
+  </section>
 
-  <button class="fab">Salvar exercício</button>
+</main>
 
-  <nav>
-    <button class="active">🏋️<span>Treino</span></button>
-    <button>📊<span>Histórico</span></button>
-    <button>⚙️<span>Config</span></button>
-  </nav>
+<script>
+/* ===== MOCK DE DADOS (depois vem do Sheets) ===== */
+const treinoMock = [
+  {
+    exercicio: "Supino reto barra",
+    info: "Peito • Reps 6–8 • RIR 2",
+    series: 4,
+    rir: 2
+  },
+  {
+    exercicio: "Supino inclinado halteres",
+    info: "Peito • Reps 8–10 • RIR 2",
+    series: 3,
+    rir: 2
+  }
+];
+
+let exIndex = 0;
+
+/* ===== FUNÇÕES ===== */
+function iniciarTreino() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("workout").classList.remove("hidden");
+  document.getElementById("header").innerText = "Treino em execução";
+  exIndex = 0;
+  renderEx();
+}
+
+function renderEx() {
+  const ex = treinoMock[exIndex];
+  document.getElementById("exTitulo").innerText = ex.exercicio;
+  document.getElementById("exInfo").innerText = ex.info;
+
+  const cont = document.getElementById("series");
+  cont.innerHTML = "";
+
+  for (let i = 1; i <= ex.series; i++) {
+    cont.innerHTML += `
+      <div class="set">
+        <span>S${i}</span>
+        <input placeholder="Carga">
+        <input placeholder="Reps">
+        <input value="${ex.rir}" placeholder="RIR">
+      </div>`;
+  }
+}
+
+function next() {
+  if (exIndex < treinoMock.length - 1) {
+    exIndex++;
+    renderEx();
+  }
+}
+
+function prev() {
+  if (exIndex > 0) {
+    exIndex--;
+    renderEx();
+  }
+}
+</script>
 
 </body>
 </html>
