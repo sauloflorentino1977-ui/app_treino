@@ -6,6 +6,9 @@
   <title>Treino</title>
 
   <style>
+    /* ===========================
+       RESET / BASE
+    =========================== */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -17,11 +20,14 @@
       height: 100vh;
       background: #0f172a;
       color: #f8fafc;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
+    /* ===========================
+       HEADER
+    =========================== */
     header {
       background: #020617;
       padding: 14px;
@@ -44,6 +50,9 @@
       display: none;
     }
 
+    /* ===========================
+       MAIN
+    =========================== */
     main {
       flex: 1;
       overflow-y: auto;
@@ -62,7 +71,9 @@
       font-weight: 600;
     }
 
-    /* HOME */
+    /* ===========================
+       HOME
+    =========================== */
     #home label {
       font-size: 14px;
       opacity: 0.85;
@@ -80,7 +91,9 @@
       margin-bottom: 24px;
     }
 
-    /* WORKOUT */
+    /* ===========================
+       WORKOUT
+    =========================== */
     .exercise h2 {
       font-size: 20px;
       margin-bottom: 4px;
@@ -160,18 +173,20 @@
 
 <main>
 
-  <!-- HOME -->
+  <!-- ===========================
+       HOME
+  =========================== -->
   <section id="home">
     <label>Qual treino hoje?</label>
-    
     <select id="treinoSelect">
-      <option value="">Carregando treinos...</option>
+      <option>Carregando treinos...</option>
     </select>
-
     <button class="primary" onclick="iniciarTreino()">Iniciar treino</button>
   </section>
 
-  <!-- WORKOUT -->
+  <!-- ===========================
+       WORKOUT
+  =========================== -->
   <section id="workout" class="hidden">
     <div class="exercise">
       <h2 id="exTitulo"></h2>
@@ -193,74 +208,134 @@
 </main>
 
 <script>
-  
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzjvYxoMFWdGJYFSHV03Y6Zt1uEVyZq3q5ImnnneVnM5oGEJlxjzLia99H2E8u-e1Lw6g/exec";
-</script>
+/* ===========================
+   CONFIG
+=========================== */
+const API_URL = "https://script.google.com/macros/s/AKfycbzjvYxoMFWdGJYFSHV03Y6Zt1uEVyZq3q5ImnnneVnM5oGEJlxjzLia99H2E8u-e1Lw6g/exec";
 
+/* ===========================
+   STATE
+=========================== */
+let treinoAtual = null;
+let exercicios = [];
+let exIndex = 0;
 
-  let exIndex = 0;
-
-  function iniciarTreino() {
-    document.getElementById("home").classList.add("hidden");
-    document.getElementById("workout").classList.remove("hidden");
-    document.getElementById("btnHome").style.display = "block";
-    document.getElementById("headerTitle").innerText = "Treino em execução";
-    exIndex = 0;
-    render();
-  }
-
-  function voltarHome() {
-    const ok = confirm("Deseja sair do treino? Os dados serão descartados.");
-    if (!ok) return;
-
-    document.getElementById("home").classList.remove("hidden");
-    document.getElementById("workout").classList.add("hidden");
-    document.getElementById("btnHome").style.display = "none";
-    document.getElementById("headerTitle").innerText = "Selecionar treino";
-    document.getElementById("series").innerHTML = "";
-    document.getElementById("obs").value = "";
-  }
-
-  function render() {
-    const ex = treinoMock[exIndex];
-    document.getElementById("exTitulo").innerText = ex.exercicio;
-    document.getElementById("exInfo").innerText = ex.info;
-    document.getElementById("obs").value = "";
-
-    const cont = document.getElementById("series");
-    cont.innerHTML = "";
-
-    for (let i = 1; i <= ex.series; i++) {
-      cont.innerHTML += `
-        <div class="set">
-          <span>S${i}</span>
-          <input placeholder="Carga">
-          <input placeholder="Reps">
-          <input value="${ex.rir}" placeholder="RIR">
-        </div>`;
-    }
-  }
-
-  function next() {
-    if (exIndex < treinoMock.length - 1) {
-      exIndex++;
-      render();
-    }
-  }
-
-  function prev() {
-    if (exIndex > 0) {
-      exIndex--;
-      render();
-    }
-  }
-
-      /* ===========================
-   INIT APP
+/* ===========================
+   INIT
 =========================== */
 window.onload = carregarTreinos;
-      
+
+/* ===========================
+   API — TREINOS
+=========================== */
+async function carregarTreinos() {
+  try {
+    const resp = await fetch(`${API_URL}?action=listarTreinos`);
+    const treinos = await resp.json();
+
+    const select = document.getElementById("treinoSelect");
+    select.innerHTML = "";
+
+    treinos.forEach(id => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = formatarNomeTreino(id);
+      select.appendChild(opt);
+    });
+  } catch (e) {
+    alert("Erro ao carregar treinos");
+    console.error(e);
+  }
+}
+
+function formatarNomeTreino(id) {
+  const mapa = {
+    A1: "Treino A1 — Push",
+    B1: "Treino B1 — Pull",
+    C1: "Treino C1 — Legs",
+    D1: "Treino D1 — Upper"
+  };
+  return mapa[id] || `Treino ${id}`;
+}
+
+/* ===========================
+   INICIAR TREINO
+=========================== */
+async function iniciarTreino() {
+  treinoAtual = document.getElementById("treinoSelect").value;
+
+  const resp = await fetch(`${API_URL}?action=buscarTreino&treino=${treinoAtual}`);
+  exercicios = await resp.json();
+
+  exIndex = 0;
+
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("workout").classList.remove("hidden");
+  document.getElementById("btnHome").style.display = "block";
+  document.getElementById("headerTitle").innerText = `Treino ${treinoAtual}`;
+
+  render();
+}
+
+/* ===========================
+   RENDER
+=========================== */
+function render() {
+  const ex = exercicios[exIndex];
+
+  document.getElementById("exTitulo").innerText = ex.exercicio;
+  document.getElementById("exInfo").innerText =
+    `${ex.musculos} • Reps ${ex.reps_alvo} • RIR ${ex.rir_alvo}`;
+
+  document.getElementById("obs").value = "";
+
+  const cont = document.getElementById("series");
+  cont.innerHTML = "";
+
+  for (let i = 1; i <= ex.series; i++) {
+    cont.innerHTML += `
+      <div class="set">
+        <span>S${i}</span>
+        <input placeholder="Carga">
+        <input placeholder="Reps">
+        <input value="${ex.rir_alvo}" placeholder="RIR">
+      </div>`;
+  }
+}
+
+/* ===========================
+   NAV
+=========================== */
+function next() {
+  if (exIndex < exercicios.length - 1) {
+    exIndex++;
+    render();
+  }
+}
+
+function prev() {
+  if (exIndex > 0) {
+    exIndex--;
+    render();
+  }
+}
+
+/* ===========================
+   VOLTAR HOME
+=========================== */
+function voltarHome() {
+  const ok = confirm("Deseja sair do treino? Os dados serão descartados.");
+  if (!ok) return;
+
+  exercicios = [];
+  treinoAtual = null;
+  exIndex = 0;
+
+  document.getElementById("workout").classList.add("hidden");
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("btnHome").style.display = "none";
+  document.getElementById("headerTitle").innerText = "Selecionar treino";
+}
 </script>
 
 </body>
